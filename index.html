@@ -3,65 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Mama 80 – Zenei válogatás</title>
 
   <style>
+
+    /* ---------- ALAP ---------- */
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Georgia, "Times New Roman", serif;
-      background: #f7f4ef;
-      color: #333;
       margin: 0;
-      padding: 0;
+      background: #f5f3ef;
+      color: #292929;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 70px 25px 60px;
     }
 
+
+    /* ---------- FEJLÉC ---------- */
+
     header {
+      position: relative;
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 65px;
+      padding-bottom: 35px;
+      border-bottom: 1px solid #d4d0c8;
+    }
+
+    .number {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 110px;
+      line-height: 0.8;
+      font-weight: normal;
+      color: #dedbd4;
+      margin-bottom: -5px;
+      letter-spacing: -8px;
     }
 
     h1 {
+      position: relative;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
       font-size: 38px;
-      margin-bottom: 10px;
       font-weight: normal;
+      letter-spacing: 0.5px;
     }
 
     .subtitle {
+      margin-top: 12px;
+      font-family: Georgia, "Times New Roman", serif;
       font-size: 18px;
-      color: #777;
       font-style: italic;
+      color: #77736c;
     }
 
+
+    /* ---------- ZENEI TÉTELEK ---------- */
+
     .piece {
-      background: white;
-      margin-bottom: 30px;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: #ffffff;
+      margin-bottom: 38px;
+      padding: 30px 32px 32px;
+      border: 1px solid #e2dfd8;
+    }
+
+    .piece-number {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #918c84;
+      margin-bottom: 10px;
+      text-transform: uppercase;
     }
 
     .piece h2 {
-      font-size: 20px;
-      margin-top: 0;
-      margin-bottom: 8px;
+      margin: 0 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: normal;
+      line-height: 1.35;
     }
 
     .performer {
-      color: #666;
-      margin-bottom: 15px;
+      margin-bottom: 22px;
+      color: #77736c;
+      font-size: 15px;
     }
+
+
+    /* ---------- VIDEÓ ---------- */
 
     .video {
       position: relative;
+      width: 100%;
       padding-bottom: 56.25%;
       height: 0;
       overflow: hidden;
-      border-radius: 6px;
+      background: #eee;
     }
 
     .video iframe {
@@ -73,135 +119,303 @@
       border: 0;
     }
 
+
+    /* ---------- YOUTUBE GOMB ---------- */
+
+    .youtube-container {
+      padding: 35px 10px;
+      text-align: center;
+      background: #f7f6f3;
+      border: 1px solid #e2dfd8;
+    }
+
+    .youtube-description {
+      margin: 0 0 20px;
+      color: #77736c;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
     .youtube-button {
       display: inline-block;
-      padding: 12px 20px;
-      background: #333;
-      color: white;
+      padding: 11px 22px;
+      border: 1px solid #555;
+      color: #333;
+      background: transparent;
       text-decoration: none;
-      border-radius: 6px;
-      font-family: Arial, sans-serif;
-      font-size: 15px;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      transition: all 0.2s ease;
     }
 
     .youtube-button:hover {
-      opacity: 0.85;
+      background: #333;
+      color: white;
     }
 
+
+    /* ---------- LÁBLÉC ---------- */
+
     footer {
+      margin-top: 65px;
+      padding-top: 25px;
+      border-top: 1px solid #d4d0c8;
       text-align: center;
-      margin-top: 50px;
-      color: #888;
+      color: #99948b;
+      font-family: Georgia, "Times New Roman", serif;
       font-size: 14px;
     }
+
+
+    /* ---------- MOBIL ---------- */
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 45px 15px 40px;
+      }
+
+      .number {
+        font-size: 85px;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+
+      header {
+        margin-bottom: 45px;
+      }
+
+      .piece {
+        padding: 22px 18px 22px;
+        margin-bottom: 28px;
+      }
+
+      .piece h2 {
+        font-size: 21px;
+      }
+
+      .performer {
+        font-size: 14px;
+      }
+    }
+
   </style>
 </head>
+
 
 <body>
 
 <div class="container">
 
+
+  <!-- ===== FEJLÉC ===== -->
+
   <header>
-    <h1>🎵 Mama 80</h1>
-    <div class="subtitle">Zenei válogatás szeretettel</div>
+
+    <div class="number">80</div>
+
+    <h1>Mama 80</h1>
+
+    <div class="subtitle">
+      Zenei válogatás szeretettel
+    </div>
+
   </header>
 
 
-  <div class="piece">
-    <h2>1. Joseph Haydn – Oboe Concerto in C major, Hob. VIIg:C1</h2>
+
+  <!-- ===== 1. HAYDN ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      01
+    </div>
+
+    <h2>
+      Joseph Haydn – Oboe Concerto in C major, Hob. VIIg:C1
+    </h2>
+
     <div class="performer">
       François Leleux · WDR Sinfonieorchester
     </div>
 
     <div class="video">
+
       <iframe
         src="https://www.youtube.com/embed/lE24eN-39T4"
         allowfullscreen>
       </iframe>
+
     </div>
-  </div>
+
+  </section>
 
 
-  <div class="piece">
-    <h2>2. W. A. Mozart – Sinfonia Concertante for Winds</h2>
+
+  <!-- ===== 2. MOZART ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      02
+    </div>
+
+    <h2>
+      W. A. Mozart – Sinfonia Concertante for Winds
+    </h2>
+
     <div class="performer">
       Fuchs · Dohr · Keller · Horváth · Mohai
     </div>
 
     <div class="video">
+
       <iframe
         src="https://www.youtube.com/embed/VivYG-BFc48?start=1290"
         allowfullscreen>
       </iframe>
+
     </div>
-  </div>
+
+  </section>
 
 
-  <div class="piece">
-    <h2>3. Felix Mendelssohn Bartholdy – Violin Concerto</h2>
+
+  <!-- ===== 3. MENDELSSOHN ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      03
+    </div>
+
+    <h2>
+      Felix Mendelssohn Bartholdy – Violin Concerto
+    </h2>
+
     <div class="performer">
       Marc Bouchkov
     </div>
 
     <div class="video">
+
       <iframe
         src="https://www.youtube.com/embed/kJHPOfGZgfU"
         allowfullscreen>
       </iframe>
+
     </div>
-  </div>
+
+  </section>
 
 
-  <div class="piece">
-    <h2>4. J. S. Bach – Cello</h2>
+
+  <!-- ===== 4. BACH ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      04
+    </div>
+
+    <h2>
+      J. S. Bach – Cello
+    </h2>
+
     <div class="performer">
       Zétényi Tamás
     </div>
 
     <div class="video">
+
       <iframe
         src="https://www.youtube.com/embed/nvnIFbqKyos"
         allowfullscreen>
       </iframe>
+
     </div>
-  </div>
+
+  </section>
 
 
-  <div class="piece">
-    <h2>5. Astor Piazzolla – Escualo</h2>
+
+  <!-- ===== 5. PIAZZOLLA ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      05
+    </div>
+
+    <h2>
+      Astor Piazzolla – Escualo
+    </h2>
+
     <div class="performer">
       Gidon Kremer · Per Arne Glorvigen · Vadim Sakharov · Alois Posch
     </div>
 
-    <p>
+    <div class="youtube-container">
+
+      <p class="youtube-description">
+        Die Aufnahme ist direkt auf YouTube verfügbar.
+      </p>
+
       <a
         class="youtube-button"
         href="https://www.youtube.com/watch?v=aIXYYsqM2wE"
         target="_blank">
-        ▶ Auf YouTube abspielen
+        Auf YouTube abspielen
       </a>
-    </p>
-  </div>
+
+    </div>
+
+  </section>
 
 
-  <div class="piece">
-    <h2>6. Philip Glass – Double Concerto for Violin and Cello</h2>
+
+  <!-- ===== 6. GLASS ===== -->
+
+  <section class="piece">
+
+    <div class="piece-number">
+      06
+    </div>
+
+    <h2>
+      Philip Glass – Double Concerto for Violin and Cello
+    </h2>
+
     <div class="performer">
       Gidon Kremer · Giedrė Dirvanauskaitė
     </div>
 
     <div class="video">
+
       <iframe
         src="https://www.youtube.com/embed/DoyZqPkY5Lo"
         allowfullscreen>
       </iframe>
-    </div>
-  </div>
 
+    </div>
+
+  </section>
+
+
+
+  <!-- ===== LÁBLÉC ===== -->
 
   <footer>
     Mama 80 · Zenei válogatás
   </footer>
+
 
 </div>
 
