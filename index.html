@@ -67,6 +67,40 @@
     }
 
 
+    /* ---------- PLAYLIST LINK / GOMB ---------- */
+
+    .playlist-link-container {
+      text-align: center;
+      margin: -25px 0 38px;
+    }
+
+    .playlist-link {
+      display: inline-block;
+      background: transparent;
+      color: #555;
+      text-decoration: none;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      font-style: italic;
+      border: none;
+      border-bottom: 1px solid #aaa;
+      padding: 0 0 2px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .playlist-link:hover,
+    .playlist-link:focus-visible {
+      color: #222;
+      border-color: #555;
+    }
+
+    .playlist-link:focus-visible {
+      outline: 2px solid #555;
+      outline-offset: 4px;
+    }
+
+
     /* ---------- ZENEI TÉTELEK ---------- */
 
     .piece {
@@ -119,6 +153,135 @@
       border: 0;
     }
 
+    /* Kattintásra betöltődő videó-előnézet (facade) */
+    .video-facade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font: inherit;
+      padding: 0;
+    }
+
+    .video-facade::after {
+      content: "";
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.55);
+      position: absolute;
+    }
+
+    .video-facade::before {
+      content: "▶";
+      position: relative;
+      z-index: 1;
+      font-size: 24px;
+      margin-left: 4px;
+    }
+
+    .video-facade:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: -6px;
+    }
+
+
+    /* ---------- ÖSSZES SZÁM LEJÁTSZÁSA ---------- */
+
+    #playlist-player {
+      display: none;
+      margin-bottom: 38px;
+      background: #ffffff;
+      border: 1px solid #e2dfd8;
+      padding: 30px 32px 32px;
+    }
+
+    #playlist-player .playlist-title {
+      margin-bottom: 20px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      text-align: center;
+    }
+
+    #playlist-video {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      background: #eee;
+    }
+
+    #playlist-video iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    #playlist-info {
+      margin-top: 18px;
+      text-align: center;
+      color: #77736c;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    #playlist-info.is-error {
+      color: #a44343;
+      font-style: normal;
+    }
+
+    #playlist-piazzolla {
+      display: none;
+      padding: 30px 10px 5px;
+      text-align: center;
+    }
+
+    #playlist-piazzolla p {
+      margin: 0 0 20px;
+      color: #77736c;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+    }
+
+    .playlist-button {
+      display: inline-block;
+      padding: 11px 22px;
+      border: 1px solid #555;
+      color: #333;
+      background: transparent;
+      text-decoration: none;
+      font-size: 14px;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 4px;
+    }
+
+    .playlist-button:hover,
+    .playlist-button:focus-visible {
+      background: #333;
+      color: white;
+    }
+
+    .playlist-button:focus-visible {
+      outline: 2px solid #333;
+      outline-offset: 2px;
+    }
+
 
     /* ---------- YOUTUBE GOMB ---------- */
 
@@ -148,7 +311,8 @@
       transition: all 0.2s ease;
     }
 
-    .youtube-button:hover {
+    .youtube-button:hover,
+    .youtube-button:focus-visible {
       background: #333;
       color: white;
     }
@@ -203,6 +367,11 @@
       .performer {
         font-size: 14px;
       }
+
+      #playlist-player {
+        padding: 22px 18px;
+      }
+
     }
 
   </style>
@@ -229,6 +398,69 @@
   </header>
 
 
+  <!-- ===== ÖSSZES SZÁM ===== -->
+
+  <div class="playlist-link-container">
+
+    <button
+      type="button"
+      class="playlist-link"
+      onclick="startPlaylist()">
+      ▶&nbsp; Az összes szám lejátszása
+    </button>
+
+  </div>
+
+
+  <!-- ===== LEJÁTSZÓ ===== -->
+
+  <section id="playlist-player" aria-live="polite">
+
+    <div class="playlist-title">
+      Az összes szám
+    </div>
+
+    <div id="playlist-video">
+      <div id="youtube-player"></div>
+    </div>
+
+    <div id="playlist-info">
+      <span id="current-track">
+        01 · Joseph Haydn
+      </span>
+    </div>
+
+
+    <!-- ===== PIAZZOLLA (playlist módban) ===== -->
+
+    <div id="playlist-piazzolla">
+
+      <p>
+        Ez a felvétel közvetlenül a YouTube-on hallgatható meg.
+      </p>
+
+      
+        class="youtube-button"
+        href="https://www.youtube.com/watch?v=aIXYYsqM2wE"
+        target="_blank"
+        rel="noopener">
+        Lejátszás a YouTube-on
+      </a>
+
+      <br>
+
+      <button
+        type="button"
+        class="playlist-button"
+        onclick="continuePlaylist()">
+        Tovább a következő számhoz →
+      </button>
+
+    </div>
+
+  </section>
+
+
 
   <!-- ===== 1. HAYDN ===== -->
 
@@ -246,13 +478,8 @@
       François Leleux · WDR Sinfonieorchester
     </div>
 
-    <div class="video">
-
-      <iframe
-        src="https://www.youtube.com/embed/lE24eN-39T4"
-        allowfullscreen>
-      </iframe>
-
+    <div class="video" data-video-id="lE24eN-39T4" data-start="0"
+         data-title="Joseph Haydn – Oboe Concerto in C major, Hob. VIIg:C1">
     </div>
 
   </section>
@@ -275,13 +502,8 @@
       Fuchs · Dohr · Keller · Horváth · Mohai
     </div>
 
-    <div class="video">
-
-      <iframe
-        src="https://www.youtube.com/embed/VivYG-BFc48?start=1290"
-        allowfullscreen>
-      </iframe>
-
+    <div class="video" data-video-id="VivYG-BFc48" data-start="1290"
+         data-title="W. A. Mozart – Sinfonia Concertante for Winds">
     </div>
 
   </section>
@@ -304,13 +526,8 @@
       Marc Bouchkov
     </div>
 
-    <div class="video">
-
-      <iframe
-        src="https://www.youtube.com/embed/kJHPOfGZgfU"
-        allowfullscreen>
-      </iframe>
-
+    <div class="video" data-video-id="kJHPOfGZgfU" data-start="0"
+         data-title="Felix Mendelssohn Bartholdy – Violin Concerto">
     </div>
 
   </section>
@@ -333,13 +550,8 @@
       Zétényi Tamás
     </div>
 
-    <div class="video">
-
-      <iframe
-        src="https://www.youtube.com/embed/nvnIFbqKyos?start=30"
-        allowfullscreen>
-      </iframe>
-
+    <div class="video" data-video-id="nvnIFbqKyos" data-start="30"
+         data-title="J. S. Bach – Cello">
     </div>
 
   </section>
@@ -368,10 +580,11 @@
         A felvétel közvetlenül a YouTube-on hallgatható meg.
       </p>
 
-      <a
+      
         class="youtube-button"
         href="https://www.youtube.com/watch?v=aIXYYsqM2wE"
-        target="_blank">
+        target="_blank"
+        rel="noopener">
         Lejátszás a YouTube-on
       </a>
 
@@ -397,13 +610,8 @@
       Gidon Kremer · Giedrė Dirvanauskaitė
     </div>
 
-    <div class="video">
-
-      <iframe
-        src="https://www.youtube.com/embed/DoyZqPkY5Lo"
-        allowfullscreen>
-      </iframe>
-
+    <div class="video" data-video-id="DoyZqPkY5Lo" data-start="0"
+         data-title="Philip Glass – Double Concerto for Violin and Cello">
     </div>
 
   </section>
@@ -418,6 +626,281 @@
 
 
 </div>
+
+
+<!-- ===== SCRIPT ===== -->
+
+<script>
+
+  /* ----------------------------------------------------------
+     EGYETLEN ADATFORRÁS a számokhoz — sem az egyes kártyák,
+     sem a lejátszási lista nem tartalmaz duplikált videoId-t.
+     ---------------------------------------------------------- */
+
+  const tracks = [
+
+    {
+      id: "lE24eN-39T4",
+      start: 0,
+      number: "01",
+      title: "Joseph Haydn"
+    },
+
+    {
+      id: "VivYG-BFc48",
+      start: 1290,
+      number: "02",
+      title: "W. A. Mozart"
+    },
+
+    {
+      id: "kJHPOfGZgfU",
+      start: 0,
+      number: "03",
+      title: "Felix Mendelssohn Bartholdy"
+    },
+
+    {
+      id: "nvnIFbqKyos",
+      start: 30,
+      number: "04",
+      title: "J. S. Bach"
+    },
+
+    {
+      id: "aIXYYsqM2wE",
+      start: 0,
+      number: "05",
+      title: "Astor Piazzolla",
+      external: true
+    },
+
+    {
+      id: "DoyZqPkY5Lo",
+      start: 0,
+      number: "06",
+      title: "Philip Glass"
+    }
+
+  ];
+
+
+  /* ----------------------------------------------------------
+     LUSTA VIDEÓBETÖLTÉS (facade minta)
+     Az egyes kártyák videói csak kattintásra töltődnek be
+     valódi iframe-ként — ez gyorsítja az oldal első betöltését.
+     ---------------------------------------------------------- */
+
+  function initVideoFacades() {
+
+    document.querySelectorAll(".video[data-video-id]").forEach(function (container) {
+
+      const videoId = container.dataset.videoId;
+      const start = container.dataset.start || "0";
+      const title = container.dataset.title || "YouTube videó";
+
+      const facade = document.createElement("button");
+      facade.type = "button";
+      facade.className = "video-facade";
+      facade.style.backgroundImage =
+        "url(https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg)";
+      facade.setAttribute("aria-label", "Lejátszás: " + title);
+
+      facade.addEventListener("click", function () {
+        loadIframe(container, videoId, start, title);
+      });
+
+      container.appendChild(facade);
+
+    });
+
+  }
+
+  function loadIframe(container, videoId, start, title) {
+
+    const iframe = document.createElement("iframe");
+    iframe.src =
+      "https://www.youtube.com/embed/" + videoId +
+      "?start=" + start + "&autoplay=1&rel=0";
+    iframe.title = title;
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+
+    container.innerHTML = "";
+    container.appendChild(iframe);
+
+  }
+
+
+  /* ----------------------------------------------------------
+     "ÖSSZES SZÁM" LEJÁTSZÓ (YouTube IFrame API)
+     ---------------------------------------------------------- */
+
+  let player = null;
+  let currentTrack = 0;
+  let apiReady = false;
+  let pendingAutostart = false;
+
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  const firstScriptTag = document.getElementsByTagName("script")[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+  function onYouTubeIframeAPIReady() {
+
+    apiReady = true;
+
+    player = new YT.Player("youtube-player", {
+
+      width: "100%",
+      height: "100%",
+
+      videoId: tracks[0].id,
+
+      playerVars: {
+        start: tracks[0].start,
+        rel: 0
+      },
+
+      events: {
+        onStateChange: onPlayerStateChange,
+        onError: onPlayerError,
+        onReady: function () {
+          if (pendingAutostart) {
+            pendingAutostart = false;
+            player.loadVideoById({
+              videoId: tracks[0].id,
+              startSeconds: tracks[0].start
+            });
+          }
+        }
+      }
+
+    });
+
+  }
+
+
+  function startPlaylist() {
+
+    const playlist = document.getElementById("playlist-player");
+    playlist.style.display = "block";
+
+    playlist.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    currentTrack = 0;
+    updateTrackInfo();
+
+    if (player && apiReady) {
+      player.loadVideoById({
+        videoId: tracks[0].id,
+        startSeconds: tracks[0].start
+      });
+    } else {
+      // Az API még nem töltődött be — jelezzük, hogy induláskor kezdje el
+      pendingAutostart = true;
+    }
+
+  }
+
+
+  function updateTrackInfo(message) {
+
+    const track = tracks[currentTrack];
+    const infoEl = document.getElementById("playlist-info");
+    const trackEl = document.getElementById("current-track");
+
+    infoEl.classList.remove("is-error");
+    trackEl.textContent = message || (track.number + " · " + track.title);
+
+  }
+
+
+  function onPlayerStateChange(event) {
+
+    if (event.data !== YT.PlayerState.ENDED) {
+      return;
+    }
+
+    advanceTrack();
+
+  }
+
+
+  function onPlayerError() {
+
+    // Egy videó nem tölthető be (törölve, régióhoz kötve stb.) —
+    // ne akadjon el csendben a lejátszás, lépjünk a következőre.
+    const infoEl = document.getElementById("playlist-info");
+    infoEl.classList.add("is-error");
+    document.getElementById("current-track").textContent =
+      "Ez a szám most nem tölthető be, ugrás a következőre…";
+
+    setTimeout(advanceTrack, 1800);
+
+  }
+
+
+  function advanceTrack() {
+
+    currentTrack++;
+
+    if (currentTrack >= tracks.length) {
+      updateTrackInfo("Vége a listának — köszönjük a hallgatást!");
+      return;
+    }
+
+    const next = tracks[currentTrack];
+
+    if (next.external) {
+
+      player.stopVideo();
+
+      document.getElementById("playlist-video").style.display = "none";
+      document.getElementById("playlist-info").style.display = "none";
+      document.getElementById("playlist-piazzolla").style.display = "block";
+
+      return;
+    }
+
+    updateTrackInfo();
+
+    player.loadVideoById({
+      videoId: next.id,
+      startSeconds: next.start
+    });
+
+  }
+
+
+  function continuePlaylist() {
+
+    document.getElementById("playlist-piazzolla").style.display = "none";
+    document.getElementById("playlist-video").style.display = "block";
+    document.getElementById("playlist-info").style.display = "block";
+
+    // A Piazzolla (külső) szám utáni első számra lépünk
+    const externalIndex = tracks.findIndex(function (t) { return t.external; });
+    currentTrack = externalIndex + 1;
+
+    updateTrackInfo();
+
+    player.loadVideoById({
+      videoId: tracks[currentTrack].id,
+      startSeconds: tracks[currentTrack].start
+    });
+
+  }
+
+
+  document.addEventListener("DOMContentLoaded", initVideoFacades);
+
+</script>
+
 
 </body>
 </html>
