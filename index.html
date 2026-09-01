@@ -729,21 +729,24 @@
 
 
   /* ----------------------------------------------------------
-     "ÖSSZES SZÁM" LEJÁTSZÓ (YouTube IFrame API)
+     "ÖSSZES SZÁM" LEJÁTSZÓ
      ---------------------------------------------------------- */
 
   let player = null;
   let currentTrack = 0;
   let apiReady = false;
   let pendingAutostart = false;
+  let advancing = false;
+  let progressTimer = null;
 
-  const tag = document.createElement("script");
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName("script")[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-  /* Segédfüggvény: egy szám betöltése, "end" idővel együtt, ha van */
+  /* ----------------------------------------------------------
+     EGY SZÁM BETÖLTÉSE
+     ---------------------------------------------------------- */
+
   function loadTrack(track) {
+
+    advancing = false;
 
     const opts = {
       videoId: track.id,
@@ -756,7 +759,54 @@
 
     player.loadVideoById(opts);
 
+    startProgressCheck();
   }
+
+
+  /* ----------------------------------------------------------
+     FOLYAMATOSAN ELLENŐRIZZÜK AZ END IDŐT
+     ---------------------------------------------------------- */
+
+  function startProgressCheck() {
+
+    stopProgressCheck();
+
+    progressTimer = setInterval(function () {
+
+      if (!player || advancing) {
+        return;
+      }
+
+      const track = tracks[currentTrack];
+
+      if (!track || !track.end) {
+        return;
+      }
+
+      const currentTime = player.getCurrentTime();
+
+      if (currentTime >= track.end) {
+        advanceTrack();
+      }
+
+    }, 500);
+
+  }
+
+
+  function stopProgressCheck() {
+
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+    }
+
+  }
+
+
+  /* ----------------------------------------------------------
+     YOUTUBE API KÉSZ
+     ---------------------------------------------------------- */
 
   function onYouTubeIframeAPIReady() {
 
@@ -783,14 +833,23 @@
       playerVars: playerVars,
 
       events: {
+
         onStateChange: onPlayerStateChange,
+
         onError: onPlayerError,
+
         onReady: function () {
+
           if (pendingAutostart) {
+
             pendingAutostart = false;
+
             loadTrack(tracks[0]);
+
           }
+
         }
+
       }
 
     });
@@ -798,9 +857,15 @@
   }
 
 
+  /* ----------------------------------------------------------
+     PLAYLIST INDÍTÁSA
+     ---------------------------------------------------------- */
+
   function startPlaylist() {
 
-    const playlist = document.getElementById("playlist-player");
+    const playlist =
+      document.getElementById("playlist-player");
+
     playlist.style.display = "block";
 
     playlist.scrollIntoView({
@@ -809,104 +874,223 @@
     });
 
     currentTrack = 0;
+    advancing = false;
+
     updateTrackInfo();
 
     if (player && apiReady) {
+
       loadTrack(tracks[0]);
+
     } else {
-      // Az API még nem töltődött be — jelezzük, hogy induláskor kezdje el
+
       pendingAutostart = true;
+
     }
 
   }
 
+
+  /* ----------------------------------------------------------
+     INFORMÁCIÓ FRISSÍTÉSE
+     ---------------------------------------------------------- */
 
   function updateTrackInfo(message) {
 
     const track = tracks[currentTrack];
-    const infoEl = document.getElementById("playlist-info");
-    const trackEl = document.getElementById("current-track");
+
+    const infoEl =
+      document.getElementById("playlist-info");
+
+    const trackEl =
+      document.getElementById("current-track");
 
     infoEl.classList.remove("is-error");
-    trackEl.textContent = message || (track.number + " · " + track.title);
+
+    trackEl.textContent =
+      message ||
+      (track.number + " · " + track.title);
 
   }
 
+
+  /* ----------------------------------------------------------
+     VIDEÓ ÁLLAPOTÁNAK FIGYELÉSE
+     ---------------------------------------------------------- */
 
   function onPlayerStateChange(event) {
 
-    if (event.data !== YT.PlayerState.ENDED) {
-      return;
-    }
+    /*
+       Az "end" időt már a saját időellenőrzésünk kezeli.
+       Az ENDED esemény csak akkor kell, ha nincs megadva
+       end érték.
+    */
 
-    advanceTrack();
+    if (event.data === YT.PlayerState.ENDED) {
+
+      const track = tracks[currentTrack];
+
+      if (!track.end) {
+        advanceTrack();
+      }
+
+    }
 
   }
 
+
+  /* ----------------------------------------------------------
+     HIBA KEZELÉSE
+     ---------------------------------------------------------- */
 
   function onPlayerError() {
 
-    // Egy videó nem tölthető be (törölve, régióhoz kötve stb.) —
-    // ne akadjon el csendben a lejátszás, lépjünk a következőre.
-    const infoEl = document.getElementById("playlist-info");
+    if (advancing) {
+      return;
+    }
+
+    const infoEl =
+      document.getElementById("playlist-info");
+
     infoEl.classList.add("is-error");
-    document.getElementById("current-track").textContent =
+
+    document.getElementById(
+      "current-track"
+    ).textContent =
       "Ez a szám most nem tölthető be, ugrás a következőre…";
 
-    setTimeout(advanceTrack, 1800);
+    setTimeout(function () {
+      advanceTrack();
+    }, 1800);
 
   }
 
 
+  /* ----------------------------------------------------------
+     KÖVETKEZŐ SZÁM
+     ---------------------------------------------------------- */
+
   function advanceTrack() {
 
-    currentTrack++;
+    /*
+       Fontos:
+       megakadályozzuk, hogy ugyanaz a videó
+       kétszer léptessen tovább.
+    */
 
-    if (currentTrack >= tracks.length) {
-      updateTrackInfo("Vége a listának — köszönjük a hallgatást!");
+    if (advancing) {
       return;
     }
 
+    advancing = true;
+
+    stopProgressCheck();
+
+    currentTrack++;
+
+
+    /* ---------- VÉGE ---------- */
+
+    if (currentTrack >= tracks.length) {
+
+      updateTrackInfo(
+        "Vége a listának — köszönjük a hallgatást!"
+      );
+
+      advancing = false;
+
+      return;
+    }
+
+
     const next = tracks[currentTrack];
+
+
+    /* ---------- PIAZZOLLA ---------- */
 
     if (next.external) {
 
       player.stopVideo();
 
-      document.getElementById("playlist-video").style.display = "none";
-      document.getElementById("playlist-info").style.display = "none";
-      document.getElementById("playlist-piazzolla").style.display = "block";
+      document.getElementById(
+        "playlist-video"
+      ).style.display = "none";
+
+      document.getElementById(
+        "playlist-info"
+      ).style.display = "none";
+
+      document.getElementById(
+        "playlist-piazzolla"
+      ).style.display = "block";
 
       return;
+
     }
 
+
+    /* ---------- KÖVETKEZŐ VIDEÓ ---------- */
+
     updateTrackInfo();
+
     loadTrack(next);
 
   }
 
 
+  /* ----------------------------------------------------------
+     PIAZZOLLA UTÁN → GLASS
+     ---------------------------------------------------------- */
+
   function continuePlaylist() {
 
-    document.getElementById("playlist-piazzolla").style.display = "none";
-    document.getElementById("playlist-video").style.display = "block";
-    document.getElementById("playlist-info").style.display = "block";
+    document.getElementById(
+      "playlist-piazzolla"
+    ).style.display = "none";
 
-    const nextIndex = currentTrack + 1;
+    document.getElementById(
+      "playlist-video"
+    ).style.display = "block";
+
+    document.getElementById(
+      "playlist-info"
+    ).style.display = "block";
+
+
+    const nextIndex =
+      currentTrack + 1;
+
 
     if (nextIndex >= tracks.length) {
-      updateTrackInfo("Vége a listának — köszönjük a hallgatást!");
+
+      updateTrackInfo(
+        "Vége a listának — köszönjük a hallgatást!"
+      );
+
       return;
+
     }
 
+
     currentTrack = nextIndex;
+
+    advancing = false;
+
     updateTrackInfo();
+
     loadTrack(tracks[currentTrack]);
 
   }
 
 
-  document.addEventListener("DOMContentLoaded", initVideoFacades);
+  /* ----------------------------------------------------------
+     FACADE VIDEÓK
+     ---------------------------------------------------------- */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initVideoFacades
+  );
 
 </script>
 
